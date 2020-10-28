@@ -1,7 +1,7 @@
 # Run SPaRTAN in Python
 
 ### Introduction
-
+This is the Python implementation of the SPaRTAN. In order to improve the running time, we convert some computationally intensive python modules into Cython modules, which calls some of C codes as well.
 
 
 ### Prerequesities
@@ -9,8 +9,7 @@ The code runs on Python 3, and following packages are used:
 pandas, pickle, numpy, random, os, sklearn, scipy, Cython, 
 
 ### Cython extension built
-In order to improve the running time, we convert two computationally intensive python modules into Cython modules, which calls some of C codes as well. We have uploaded Cython extensions built on a Windows and a Linux system. If they are not compatible with your platform, then you need to build them on site.
-
+There are two Cython extension modules.  We have built them in local Windows and a Linux system. .pyd files are for Windows system; .so files are for Linux and Mac system. You can download based on your operating system. If they are not compatible with your platform, then you need to build them on site.
 
 - build cythLeastR extention modue 
     
@@ -20,7 +19,7 @@ In order to improve the running time, we convert two computationally intensive p
 	python setup.py build_ext --inplace
 	```
 	
-	It will generate a .so (Mac or Linux), or a .pyd (Windows) file. 
+	 It will generate a .so (Mac or Linux), or a .pyd (Windows) file. 
 	 
 	2. Copy the .so(.pyd) file into SPaRTAN folder
     
@@ -32,12 +31,12 @@ In order to improve the running time, we convert two computationally intensive p
 	```sh
 	python setup.py build_ext --inplace
 	```
-	It will generate a.so (Mac or Linux), or a.pyd (Windows) file. 
+	  It will generate a.so (Mac or Linux), or a.pyd (Windows) file. 
      
 	2. Copy the .so(.pyd) file into SPaRTAN folder
 
 ### Load the data
-We load the data into dataset object
+Here we load the data of a Matlab format dataset
 ```sh
 dataset = loadmat("../data/pbmc5kdc.mat")
 D = dataset['D']
@@ -46,9 +45,10 @@ Y = dataset['Ypbmc5kdc']
 
 ```
 ### Cross validation
-SPaRTan model has 4 parameters pectrumA, spectrumB, rsL2 and lambda. Their values are determined by the user input data D, P, and Y. We use cross-validation to tune the parameters.
-#### Split samples into training and testing set
-First we need to split the samples of P and Y matrix into training and testing set:
+SPaRTan model has 4 parameters pectrumA, spectrumB, rsL2 and lambda. Their values are determined by the user input data D, P, and Y. We use cross-validation to determine the best values to use of those parameters. Here we explain step by step
+
+
+**First we need to split the samples of P and Y matrix into training and testing set:**
 
 ```sh
 from sklearn.model_selection import KFold
@@ -61,8 +61,7 @@ for train_index, test_index in kf.split(PP):
      ....
 
 ```
-#### nomralize data
-To improve the performance, we apply normalization to the dataset
+**To improve the performance, we apply normalization to the dataset**
 
 ```sh
 from sklearn.preprocessing import normalize
@@ -70,30 +69,27 @@ D = normalize(D,axis=0)  #normalize by column
 P_train = normalize(P_train, axis=1) #normalize by row
 Y_train = normalize(Y_train, axis=0) #normalize by column
 ```
-#### Create object of the model class
-SPaRTAN model is integrated into a python class. We first need to initilize the object of class with
+**Then we train the model with cross validation**
+SPaRTAN model is integrated into a python class. We first need to initilize the object of the class
 
 ```sh
 reg = SPaRTAN()
 ```
-#### train the model with possible combination of parameters of each spliting fold
 For each fold, we train the model with D, P_train, Y_train and test value of 4 parameters by calling function fit of the class
 
 ```sh
  reg.fit( D, P_train, Y_train, lamda = lamda_choice, rsL2 = rsL2_test, spectrumA = spectrumA_test, pectrumB = spectrumB_test)
 ```
 
-#### predict the gene expression
 After train the model with fit function, we then predict Y_test_predict with test set of P(P_test) and extract the correlation between predicted Y and observed Y 
 ```sh
 Y_test_pred = reg.predict(P_test)
 ```
-#### get the correlation of predicted gene expression and observed expression
-For each fold, and each combination of parameters, calculate the correlation between predicted Y_test_pred and observed Y_test. The best parameters will be dtermined based on the average correlatin value of all folds on test set.
+For each fold and each combination of parameters, calculate the correlation between predicted Y_test_pred and observed Y_test. The best parameters will be dtermined based on the average correlatin value of all folds on test set.
 ```sh
 corr = reg.corr(Y_test_pred, Y_test)
 ```
-#### complete implementatioin of cross-validation
+**complete implementatioin of cross-validation**
 ```sh
 D = normalize(D, axis=0)
 
@@ -152,8 +148,8 @@ rsL2_best = rsL2s[max_r]
 spectrumA_best = spectrumAs[max_a]
 spectrumB_best = spectrumBs[max_b]
 ```
-### Get the projected Data
-#### Train the model again with whole dataset and best parameters
+### Get the projected data matrices
+**Train the model again with whole dataset and best parameters**
 Now we can use the best parameters to train the model with the whole dataset to predict the features in interest
 ```sh
 #normalize P and Y, D has been normalized previously
@@ -162,17 +158,17 @@ P = normalize(P, axis=1)
 reg.fit( D, P, Y, lamda = lamda_best, rsL2 = rsL2_best, spectrumA = spectrumA_best, spectrumB = spectrumB_best  )
 ```
 
-#### Extract TF and protein interaction
+**Extract TF and protein interaction**
 Get the interaction W matrix based on D, P, Y
 ```sh
 W = reg.get_W()
 ```
-#### Extract projected protein expression
+**Extract projected protein expression**
 Get the projected P based on D, W and Y
 ```sh
 proj_P = reg.get_projP()
 ```
-#### Extract projected TF activities
+**Extract projected TF activities**
 Get the projected TF by sample matrix based on W and P
 ```sh
 proj_D = reg.get_projD()
