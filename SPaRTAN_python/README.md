@@ -94,7 +94,6 @@ For each fold, and each combination of parameters, calculate the correlation bet
 corr = reg.corr(Y_test_pred, Y_test)
 ```
 #### complete implementatioin of cross-validation
-The complete implementation of cross-validation is
 ```sh
 D = normalize(D, axis=0)
 
