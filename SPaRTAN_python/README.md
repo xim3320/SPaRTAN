@@ -56,19 +56,19 @@ from sklearn.model_selection import KFold
 fold = 5
 kf = KFold(n_splits = fold)
 for train_index, test_index in kf.split(PP):
-    P_train, P_test = PP[train_index,:], PP[test_index,:]
-    Y_train, Y_test = YY[:,train_index], YY[:,test_index]
+    P_train, P_test = P[train_index,:], P[test_index,:]
+    Y_train, Y_test = Y[:,train_index], Y[:,test_index]
      ....
 
 ```
 #### nomralize data
-To improve the performance, we apply normalization to the D matrix and traning, testing set of P and Y matrices
+To improve the performance, we apply normalization to the dataset
 
 ```sh
 from sklearn.preprocessing import normalize
 D = normalize(D,axis=0)  #normalize by column
-P_train = normalize(D, axis=1) #normalize by row
-Y_train = normalize(Y, axis=0) #normalize by column
+P_train = normalize(P_train, axis=1) #normalize by row
+Y_train = normalize(Y_train, axis=0) #normalize by column
 ```
 #### Create object of the model class
 SPaRTAN model is integrated into a python class. We first need to initilize the object of class with
@@ -152,9 +152,9 @@ rsL2_best = rsL2s[max_r]
 spectrumA_best = spectrumAs[max_a]
 spectrumB_best = spectrumBs[max_b]
 ```
-### Train and Predict Features with best parameters
-#### train the model with whole dataset
-Now we can use the best parameters to train the model with the whole datasetto predict the features in interest
+### Get the projected Data
+#### Train the model again with whole dataset and best parameters
+Now we can use the best parameters to train the model with the whole dataset to predict the features in interest
 ```sh
 #normalize P and Y, D has been normalized previously
 Y = normalize(Y, axis=0)
