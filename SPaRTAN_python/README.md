@@ -152,6 +152,7 @@ spectrumB_best = spectrumBs[max_b]
 ```
 ### Get the projected data matrices
 **Train the model again with the whole dataset and best parameters**
+
 Now we can use the best parameters to train the model with the whole dataset to predict the features of the interest
 ```sh
 #normalize P and Y, D has been normalized previously
@@ -161,16 +162,19 @@ reg.fit( D, P, Y, lamda = lamda_best, rsL2 = rsL2_best, spectrumA = spectrumA_be
 ```
 
 **Extract TF and protein interaction**
+
 Get the interaction W matrix based on D, P, Y
 ```sh
 W = reg.get_W()
 ```
 **Extract projected protein expression**
+
 Get the projected P based on D, W and Y
 ```sh
 proj_P = reg.get_projP()
 ```
 **Extract projected TF activities**
+
 Get the projected TF by sample matrix based on W and P
 ```sh
 proj_D = reg.get_projD()
