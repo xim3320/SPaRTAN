@@ -139,7 +139,7 @@ for a in range(0, lenspAs):
 
                 corr_all_spearman[a, b, l, r] = sum_corr_spearman/fold
 ```
-### Extract best parameters
+**Extract best parameters**
 After the cross-validation, we got the correlation values of all possible combination of the parameters. Then we pick the best parameter combinations with which yield the biggest correlation
 
 ```sh
