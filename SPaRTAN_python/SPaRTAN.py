@@ -1,10 +1,4 @@
         
-# -*- coding: utf-8 -*-
-"""
-Created on Sat Feb 29 11:44:06 2020
-
-@author: XIM33
-"""
 import numpy as np
 import cythkrnPlus
 import cythLeastR
