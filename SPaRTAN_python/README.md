@@ -4,16 +4,17 @@
 This is the Python implementation of the SPaRTAN. In order to improve the running time, we convert some computationally intensive python modules into Cython modules, which calls some of C codes as well.
 
 
-### Prerequesities
-The code runs on Python 3, and following packages are used:
+### Prerequisites
+The code runs on Python 3, and the following packages are used:
+
 pandas, pickle, numpy, random, os, sklearn, scipy, Cython, 
 
 ### Cython extension built
-There are two Cython extension modules needed for running SPARTAN. We have built the extensions under Windows(.pyx files) and Linux/Mac (.so files) system. You can download ones based on your operating system. If they are not compatible with your platform, then you need to build Cython extension on site. The follwoings are the instruction how to build the Cython extension
+There are two Cython extension modules needed for running SPARTAN. We have built the extensions under Windows(.pyx files) and Linux/Mac (.so files) system. You can download ones based on your operating system. If they are not compatible with your platform, then you need to build Cython extension on site. The followings are the instruction on how to build the Cython extension
 
-- build cythLeastR extension modue 
+- build cythLeastR extension module 
     
-	1. Goto folder "cythKrnPlus built", then execute command:
+	1. Go to folder "cythKrnPlus built", then execute the command:
 	
 	```sh
 	python setup.py build_ext --inplace
@@ -26,7 +27,7 @@ There are two Cython extension modules needed for running SPARTAN. We have built
 
 - build cythKrnPlus extension modue 
     
-	1. Goto folder "cythKrnPlus built", then execute command:
+	1. Go to folder "cythKrnPlus built", then execute the command:
 	
 	```sh
 	python setup.py build_ext --inplace
@@ -44,11 +45,11 @@ P = dataset['Ppbmc5kdc']
 Y = dataset['Ypbmc5kdc']
 
 ```
-### Cross validation
+### Cross-validation
 SPaRTan model has 4 parameters pectrumA, spectrumB, rsL2 and lambda. Their values are determined by the user input data D, P, and Y. We use cross-validation to determine the best values to use of those parameters. Here we explain step by step
 
 
-**First we need to split the samples of P and Y matrix into training and testing set:**
+**First, we need to split the samples of P and Y matrix into training and testing set:**
 
 ```sh
 from sklearn.model_selection import KFold
@@ -69,27 +70,28 @@ D = normalize(D,axis=0)  #normalize by column
 P_train = normalize(P_train, axis=1) #normalize by row
 Y_train = normalize(Y_train, axis=0) #normalize by column
 ```
-**Then we train the model with cross validation**
-SPaRTAN model is integrated into a python class. We first need to initilize the object of the class
+**Then we train the model with cross-validation**
+
+SPaRTAN model is integrated into a python class. We first need to initialize e the object of the class
 
 ```sh
 reg = SPaRTAN()
 ```
-For each fold, we train the model with D, P_train, Y_train and test value of 4 parameters by calling function fit of the class
+For each fold, we train the model with D, P_train, Y_train, and test values of 4 parameters by calling the function "fit" 
 
 ```sh
  reg.fit( D, P_train, Y_train, lamda = lamda_choice, rsL2 = rsL2_test, spectrumA = spectrumA_test, pectrumB = spectrumB_test)
 ```
 
-After train the model with fit function, we then predict Y_test_predict with test set of P(P_test) and extract the correlation between predicted Y and observed Y 
+After train the model with fit function, we then predict Y_test_predict with a test set of P(P_test) and extract the correlation between predicted Y and observed Y 
 ```sh
 Y_test_pred = reg.predict(P_test)
 ```
-For each fold and each combination of parameters, calculate the correlation between predicted Y_test_pred and observed Y_test. The best parameters will be dtermined based on the average correlatin value of all folds on test set.
+For each fold and each combination of parameters, calculate the correlation between predicted Y_test_pred and observed Y_test. The best parameters will be determined d based on the average correlation  value of all folds on the test set.
 ```sh
 corr = reg.corr(Y_test_pred, Y_test)
 ```
-**complete implementatioin of cross-validation**
+**complete implementation  of cross-validation**
 ```sh
 D = normalize(D, axis=0)
 
@@ -139,7 +141,7 @@ for a in range(0, lenspAs):
                 corr_all_spearman[a, b, l, r] = sum_corr_spearman/fold
 ```
 ### Extract best parameters
-After the cross-validation, we got the correlation values of all possible combination of the parameters. Then we pick the best parameter combination with which yield biggest correlation
+After the cross-validation, we got the correlation values of all possible combination of the parameters. Then we pick the best parameter combinations with which yield the biggest correlation
 
 ```sh
 max_a,max_b,max_l,max_r = np.unravel_index(corr_all_spearman.argmax(), corr_all_spearman.shape)
@@ -149,8 +151,8 @@ spectrumA_best = spectrumAs[max_a]
 spectrumB_best = spectrumBs[max_b]
 ```
 ### Get the projected data matrices
-**Train the model again with whole dataset and best parameters**
-Now we can use the best parameters to train the model with the whole dataset to predict the features in interest
+**Train the model again with the whole dataset and best parameters**
+Now we can use the best parameters to train the model with the whole dataset to predict the features of the interest
 ```sh
 #normalize P and Y, D has been normalized previously
 Y = normalize(Y, axis=0)
