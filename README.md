@@ -12,8 +12,8 @@ SPaRTAN can be simplified as solving the equation
 
 in which D, P, Y are the data input and W is the matrix we need to solve.
 
-We first conduct dimention reduction by multiplying Y<sup>T</sup> on both side of equation, then use SVD (singlar vector decomposition) to further reduce the dimention. After applying a series transformtion we convert this bilinear problem into a linear regression, in which 4 parameterss: pectrumA, spectrumB, rsL2 and lambda need to be tuned based on the user inputs,  where spectrumA and spectrumB are related with SVD; rsL2 and lambda are related with linear regressioin.
+We first conduct dimension  reduction by multiplying Y<sup>T</sup> on sides of the equation, then use SVD (singular vector decomposition) to further reduce the dimension. After applying a series transformation, we convert this bilinear problem into linear regression, in which 4 parameters: pectrumA, spectrumB, rsL2 and lambda need to be tuned based on the user inputs,  where spectrumA and spectrumB are related with SVD; rsL2 and lambda are related with linear regression.
 
-There are currently implementations of SPaRTAN in Matlab, and in Python.For more details and installation instructions on running SPaRTAN see the tutorials
+There are currently implementations of SPaRTAN in Matlab, and in Python. For more details and installation instructions on running SPaRTAN see the tutorials
 * [Run SPaRTan in Python](https://github.com/osmanbeyoglulab/SPaTRAN2/tree/main/SPaRTAN_python)
 * Run SPaRTan in Matlab
