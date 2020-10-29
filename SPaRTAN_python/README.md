@@ -46,7 +46,7 @@ Y = dataset['Ypbmc5kdc']
 
 ```
 ### Cross-validation
-SPaRTAN model has 4 parameters pectrumA, spectrumB, rsL2 and lambda. Their values are determined by the user input data D, P, and Y. We use cross-validation to determine the best values to use of those parameters. Here we explain step by step
+SPaRTAN model has 4 parameters pectrumA, spectrumB, rsL2 and lambda. Their values are determined by the user input data D, P, and Y. We use cross-validation to determine the best values of those parameters. Here we explain step by step
 
 
 **First, we need to split the samples of P and Y matrix into training and testing set:**
