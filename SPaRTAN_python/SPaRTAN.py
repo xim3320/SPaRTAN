@@ -10,7 +10,6 @@ import cythkrnPlus
 import cythLeastR
 import scipy.linalg
 import functools
-import time
 import gc
 import matplotlib.pyplot as plt
 
