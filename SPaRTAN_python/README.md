@@ -1,8 +1,7 @@
 # Run SPaRTAN in Python
 
 ### Introduction
-This is the Python implementation of the SPaRTAN. In order to improve the running time, we convert some computationally intensive python modules into Cython modules, which calls some of C codes as well.
-
+This is the Python/Cython implementation of the SPaRTAN. In order to improve the running time performance, we convert some computationally intensive python modules into Cython modules.  All functionalities are integrated into the class SPaRTAN . Please check SPaRTAN_demo.py file for the basic use of this class. This tutorial focuses on how to apply SPaRTAN in a real project situation.
 
 ### Prerequisites
 The code runs on Python 3, and the following packages are used:
