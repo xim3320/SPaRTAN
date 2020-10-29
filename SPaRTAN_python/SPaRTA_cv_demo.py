@@ -34,15 +34,16 @@ D_ori = dataset['D']
 P_ori = dataset['Ppbmc5kdc']
 Y_ori = dataset['Ypbmc5kdc']
 
-D = normalize(D_ori, axis=0)
-Y = normalize(Y_ori, axis=0)
-P = normalize(P_ori, axis=1)
+#normalize the dataset
+D = normalize(D_ori, norm='l2', axis=0)
+Y = normalize(Y_ori, norm='l2', axis=0)
+P = normalize(P_ori, norm='l2', axis=1)
 
 #create the object of SPaRTAN
 reg = SPaRTAN()
 
-lamdas = [0.001, 0.01]#, 0.1, 0.2, 0.3 ]
-rsL2s = [0, 0.001]#, 0.01]
+lamdas = [0.001, 0.01, 0.1, 0.2, 0.3 ]
+rsL2s = [0, 0.001, 0.01]
 spectrumAs = [1]
 spectrumBs = [0.5, 0.6, 0.7 ]
 
@@ -64,19 +65,24 @@ for a in range(0, lenspAs):
                 kf = KFold(n_splits = fold)
                 for train_index, test_index in kf.split(P_ori):
                          
+                    #split the data into train and test set
                     P_train, P_test = P_ori[train_index,:], P_ori[test_index,:]
                     Y_train, Y_test = Y_ori[:,train_index], Y_ori[:,test_index]
-
+                    
+		    #normalize the train and test set
                     Y_train = normalize(Y_train, axis=0)
                     Y_test = normalize(Y_test, axis=0)
 						
                     P_train = normalize(P_train, axis=1)
                     P_test = normalize(P_test, axis=1)
 	
+	            #train the model
                     reg.fit( D, P_train, Y_train, lamda = lamdas[l], rsL2 = rsL2s[r], spectrumA = spectrumAs[a], spectrumB = spectrumBs[b]  )
 
+                    # get predicted value Y_pred  on P_test
                     Y_pred = reg.predict(P_test)
 	
+                    # get the correlation bewteen Y_pred and Y_test
                     corr_spearman = reg.get_corr(Y_pred, Y_test)
                     
                     sum_corr_spearman = sum_corr_spearman + corr_spearman
