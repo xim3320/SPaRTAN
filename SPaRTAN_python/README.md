@@ -61,7 +61,7 @@ for train_index, test_index in kf.split(PP):
      ....
 
 ```
-**To improve the performance, we apply normalization to the dataset**
+**Apply normalization to the dataset**
 
 ```sh
 from sklearn.preprocessing import normalize
@@ -69,7 +69,7 @@ D = normalize(D,axis=0)  #normalize by column
 P_train = normalize(P_train, axis=1) #normalize by row
 Y_train = normalize(Y_train, axis=0) #normalize by column
 ```
-**Then we train the model with cross-validation**
+**Train the model with cross-validation**
 
 SPaRTAN model is integrated into a python class. We first need to initialize e the object of the class
 
@@ -90,6 +90,17 @@ For each fold and each combination of parameters, calculate the correlation betw
 ```sh
 corr = reg.corr(Y_test_pred, Y_test)
 ```
+**Extract best parameters**
+
+After the cross-validation, we got the correlation values of all possible combination of the parameters. Then we pick the best parameter combinations with which yield the biggest correlation
+
+```sh
+max_a,max_b,max_l,max_r = np.unravel_index(corr_all_spearman.argmax(), corr_all_spearman.shape)
+lamda_best = lamdas[max_l]
+rsL2_best = rsL2s[max_r]
+spectrumA_best = spectrumAs[max_a]
+spectrumB_best = spectrumBs[max_b]
+```
 **Complete implementation  of cross-validation**
 ```sh
 D = normalize(D, axis=0)
@@ -97,8 +108,8 @@ D = normalize(D, axis=0)
 #create the object of SPaRTAN
 reg = SPaRTAN()
 
-lamdas = [0.001, 0.01]#, 0.1, 0.2, 0.3 ]
-rsL2s = [0, 0.001]#, 0.01]
+lamdas = [0.001, 0.01, 0.1, 0.2, 0.3 ]
+rsL2s = [0, 0.001, 0.01]
 spectrumAs = [1]
 spectrumBs = [0.5, 0.6, 0.7 ]
 
@@ -119,16 +130,19 @@ for a in range(0, lenspAs):
 
                 kf = KFold(n_splits = fold)
                 for train_index, test_index in kf.split(P):
-                         
+                    
+		    # split dataset into train and test set
                     P_train, P_test = P[train_index,:], P[test_index,:]
                     Y_train, Y_test = Y[:,train_index], Y[:,test_index]
-
+                    
+		    # Apply normalization on train and test set
                     Y_train = normalize(Y_train, axis=0)
                     Y_test = normalize(Y_test, axis=0)
 						
                     P_train = normalize(P_train, axis=1)
                     P_test = normalize(P_test, axis=1)
-	
+                    
+		    # train the model
                     reg.fit( D, P_train, Y_train, lamda = lamdas[l], rsL2 = rsL2s[r], spectrumA = spectrumAs[a], spectrumB = spectrumBs[b]  )
 
                     Y_pred = reg.predict(P_test)
@@ -138,18 +152,15 @@ for a in range(0, lenspAs):
                     sum_corr_spearman = sum_corr_spearman + corr_spearman
 
                 corr_all_spearman[a, b, l, r] = sum_corr_spearman/fold
-```
-**Extract best parameters**
 
-After the cross-validation, we got the correlation values of all possible combination of the parameters. Then we pick the best parameter combinations with which yield the biggest correlation
-
-```sh
+#extract best parameters
 max_a,max_b,max_l,max_r = np.unravel_index(corr_all_spearman.argmax(), corr_all_spearman.shape)
 lamda_best = lamdas[max_l]
 rsL2_best = rsL2s[max_r]
 spectrumA_best = spectrumAs[max_a]
 spectrumB_best = spectrumBs[max_b]
 ```
+
 ### Train the model and get the projected data matrices
 **Train the model again with the whole dataset and best parameters**
 
