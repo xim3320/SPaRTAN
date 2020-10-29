@@ -149,7 +149,7 @@ rsL2_best = rsL2s[max_r]
 spectrumA_best = spectrumAs[max_a]
 spectrumB_best = spectrumBs[max_b]
 ```
-### Get the projected data matrices
+### Train the model and get the projected data matrices
 **Train the model again with the whole dataset and best parameters**
 
 Now we can use the best parameters to train the model with the whole dataset to predict the features of the interest
