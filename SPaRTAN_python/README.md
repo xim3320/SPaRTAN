@@ -9,9 +9,9 @@ The code runs on Python 3, and following packages are used:
 pandas, pickle, numpy, random, os, sklearn, scipy, Cython, 
 
 ### Cython extension built
-There are two Cython extension modules.  We have built them in local Windows and a Linux system. .pyd files are for Windows system; .so files are for Linux and Mac system. You can download based on your operating system. If they are not compatible with your platform, then you need to build them on site.
+There are two Cython extension modules needed for running SPARTAN. We have built the extensions under Windows(.pyx files) and Linux/Mac (.so files) system. You can download ones based on your operating system. If they are not compatible with your platform, then you need to build Cython extension on site. The follwoings are the instruction how to build the Cython extension
 
-- build cythLeastR extention modue 
+- build cythLeastR extension modue 
     
 	1. Goto folder "cythKrnPlus built", then execute command:
 	
@@ -21,10 +21,10 @@ There are two Cython extension modules.  We have built them in local Windows and
 	
 	 It will generate a .so (Mac or Linux), or a .pyd (Windows) file. 
 	 
-	2. Copy the .so(.pyd) file into SPaRTAN folder
+	2. Copy the .so(.pyd) file into "SPaRTAN_python" folder
     
 
-- build cythKrnPlus extention modue 
+- build cythKrnPlus extension modue 
     
 	1. Goto folder "cythKrnPlus built", then execute command:
 	
@@ -33,10 +33,10 @@ There are two Cython extension modules.  We have built them in local Windows and
 	```
 	  It will generate a.so (Mac or Linux), or a.pyd (Windows) file. 
      
-	2. Copy the .so(.pyd) file into SPaRTAN folder
+	2. Copy the .so(.pyd) file into "SPaRTAN_python" folder
 
 ### Load the data
-Here we load the data of a Matlab format dataset
+In the example, we load a Matlab format dataset
 ```sh
 dataset = loadmat("../data/pbmc5kdc.mat")
 D = dataset['D']
