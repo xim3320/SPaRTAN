@@ -25,7 +25,7 @@ There are two Cython extension modules needed for running SPARTAN. We have built
 	2. Copy the .so(.pyd) file into "SPaRTAN_python" folder
     
 
-- build cythKrnPlus extension modue 
+- build cythKrnPlus extension module 
     
 	1. Go to folder "cythKrnPlus built", then execute the command:
 	
@@ -46,7 +46,7 @@ Y = dataset['Ypbmc5kdc']
 
 ```
 ### Cross-validation
-SPaRTan model has 4 parameters pectrumA, spectrumB, rsL2 and lambda. Their values are determined by the user input data D, P, and Y. We use cross-validation to determine the best values to use of those parameters. Here we explain step by step
+SPaRTAN model has 4 parameters pectrumA, spectrumB, rsL2 and lambda. Their values are determined by the user input data D, P, and Y. We use cross-validation to determine the best values to use of those parameters. Here we explain step by step
 
 
 **First, we need to split the samples of P and Y matrix into training and testing set:**
@@ -91,7 +91,7 @@ For each fold and each combination of parameters, calculate the correlation betw
 ```sh
 corr = reg.corr(Y_test_pred, Y_test)
 ```
-**complete implementation  of cross-validation**
+**Complete implementation  of cross-validation**
 ```sh
 D = normalize(D, axis=0)
 
