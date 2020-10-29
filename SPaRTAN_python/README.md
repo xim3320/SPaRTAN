@@ -32,7 +32,7 @@ There are two Cython extension modules needed for running SPARTAN. We have built
 	```sh
 	python setup.py build_ext --inplace
 	```
-	  It will generate a.so (Mac or Linux), or a.pyd (Windows) file. 
+	 It will generate a.so (Mac or Linux), or a.pyd (Windows) file. 
      
 	2. Copy the .so(.pyd) file into "SPaRTAN_python" folder
 
