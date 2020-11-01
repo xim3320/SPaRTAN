@@ -1,7 +1,7 @@
 # SPaRTAN
 **SPaRTAN (Single-cell Proteomic and RNA based Transcription factor Activity Network)** is a computational method to link surface proteins to transcription factors (TFs)  in which we exploit cellular indexing of transcriptomes and epitopes by sequencing (CITE-seq) datasets with cis-regulatory information.
 
-<img src="https://github.com/osmanbeyoglulab/PyAffreg/blob/master/data/diagram.png" width="400">
+<img src="https://github.com/osmanbeyoglulab/PyAffreg/blob/master/data/diagram.png" width="500">
 
 Our model starts from a readout of surface protein activities as protein expression, surface activity then passes signals along the pathway and converges on a set of TFs, whose activity, in turn, regulates the mRNA expression levels of TF target-genes.
 We observed gene expression(Y) as the interaction between two profiles, protein expression(P) and TF against target genes matrix(D). We utilized those relationships and affinity regression to establish an interaction matrix between surface proteins and TFs (W) and then further predicted  target gene expression.
