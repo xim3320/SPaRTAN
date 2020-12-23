@@ -1,18 +1,11 @@
 # SPaRTAN
-**SPaRTAN (Single-cell Proteomic and RNA based Transcription factor Activity Network)** is a computational method to link surface proteins to transcription factors (TFs)  in which we exploit cellular indexing of transcriptomes and epitopes by sequencing (CITE-seq) datasets with cis-regulatory information.
+Signal-regulated transcription factors (TFs) underlie key developmental or differentiation transitions and activation states of cells (e.g., within the immune system). To date, single-cell genomics datasets have not been used to link cell-surface receptors to TFs of individual cells. To address this need, we developed a machine learning approach called **SPaRTAN (Single-cell Proteomic and RNA based Transcription factor Activity Network)** that integrates parallel surface protein measurements with mRNA expression data in cells based on CITE-seq (cellular indexing of transcriptomes and epitopes by sequencing) data with regulatory genomics resources. 
 
 <img src="https://github.com/osmanbeyoglulab/PyAffreg/blob/master/data/diagram.png" width="500">
 
-Our model starts from a readout of surface protein activities as protein expression, surface activity then passes signals along the pathway and converges on a set of TFs, whose activity, in turn, regulates the mRNA expression levels of TF target-genes.
-We observed gene expression(Y) as the interaction between two profiles, protein expression(P) and TF against target genes matrix(D). We utilized those relationships and affinity regression to establish an interaction matrix between surface proteins and TFs (W) and then further predicted  target gene expression.
+Briefly, our model views expression of surface proteins as a proxy of their activities; signaling emanating from these proteins converges on particular TFs, whose activities, in turn, regulate the expression of their target genes. Specifically, we use a regularized bilinear regression algorithm called affinity regression (AR), a general statistical framework for any problem where the observed data can be explained as interactions (**W**) between two kinds of inputs, to establish an interaction matrix between surface proteins (**P**) and TFs (**D**)  that predicts target gene expression (**Y**). 
 
-SPaRTAN can be simplified as solving the equation
-
-**DWP<sup>T</sup>=Y**
-
-in which D, P, Y are the data input and W is the matrix we need to solve.
-
-We first conduct dimension reduction by multiplying Y<sup>T</sup> on both sides of the equation, then use SVD (singular vector decomposition) to further reduce the dimension of matrices. After applying a series transformation, we convert this bilinear problem into linear regression, in which 4 parameters: pectrumA, spectrumB, rsL2 and lambda need to be tuned based on the user inputs, where spectrumA and spectrumB are related with SVD; rsL2 and lambda are related with linear regression.
+Since the model captures statistical relationships between surface proteins, TFs, and gene expression. We can use the trained interaction matrix to obtain different views of a CITE-seq data set; e.g., to predict TF activity from a cell's surface protein expression profile or to predict surface protein expression from a cell’s gene expression profile.  Intuitively, information flows down from observed surface protein levels through the learned interaction matrix to infer TF activities and observed mRNA expression levels or propagates up through the TF target-gene edges and interaction network to infer surface protein expression. 
 
 There are currently implementations of SPaRTAN in Matlab, and in Python. For more details and installation instructions on running SPaRTAN, please see the tutorials
 * [Run SPaRTan in Python](https://github.com/osmanbeyoglulab/SPaTRAN2/tree/main/SPaRTAN_python)
