@@ -36,7 +36,7 @@ There are two Cython extension modules needed for running SPARTAN. We have built
 	2. Copy the .so(.pyd) file into "SPaRTAN_python" folder
 
 ### Cross-validation
-SPaRTAN model has 4 parameters pectrumA, spectrumB, rsL2 and lambda. Their values are determined by the user input data D, P, and Y. We use cross-validation to determine the best values of those parameters. Here we explain step by step
+SPaRTAN model has 4 parameters spectrumA, spectrumB, rsL2 and lambda. Their values are determined by the user input data D, P, and Y. We use cross-validation to determine the best values of those parameters. Here we explain step by step
 
 **Load the data**
 
