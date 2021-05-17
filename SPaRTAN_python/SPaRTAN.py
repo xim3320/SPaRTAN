@@ -1,4 +1,3 @@
-        
 import numpy as np
 import cythkrnPlus
 import cythLeastR
@@ -7,87 +6,96 @@ import functools
 import gc
 import matplotlib.pyplot as plt
 
+
 def catch_exception(f):
     @functools.wraps(f)
     def func(*args, **kwargs):
         try:
             return f(*args, **kwargs)
         except Exception as e:
-            print ('Caught an exception in', f.__name__)
+            print("Caught an exception in", f.__name__)
+
     return func
+
 
 class ErrorCatcher(type):
     def __new__(cls, name, bases, dct):
         for m in dct:
-            if hasattr(dct[m], '__call__'):
+            if hasattr(dct[m], "__call__"):
                 dct[m] = catch_exception(dct[m])
         return type.__new__(cls, name, bases, dct)
 
+
 def normalize_column(A, T=0):
-    if (T== 0):
-        return np.divide(A,np.sqrt(np.sum(A**2, 0)))
+    if T == 0:
+        return np.divide(A, np.sqrt(np.sum(A ** 2, 0)))
     else:
         At = np.transpose(A)
-        return np.transpose(np.divide(At,np.sqrt(np.sum(At**2, 0)))) 
+        return np.transpose(np.divide(At, np.sqrt(np.sum(At ** 2, 0))))
+
 
 class SPaRTAN:
     __metaclass__ = ErrorCatcher
     # def __init__(self)
 
-    def fit(self,D, P_train, Y_train, lamda = 0.1, rsL2 = 0, spectrumA = 0.95, spectrumB = 0.9 ):
+    def fit(
+        self, D, P_train, Y_train, lamda=0.1, rsL2=0, spectrumA=0.95, spectrumB=0.9
+    ):
 
         self.D = D
         self.P_train = P_train
         self.Y_train = Y_train
- 
-       # transformation
+
+        # transformation
         A = self.Y_train.T @ self.D
         B = self.P_train.T
         Y = self.Y_train.T @ self.Y_train
-    
-        # SVD(A) SVD(B)  
-        UA, SA, VhA = np.linalg.svd(A); VA = VhA.T
-        UB, SB, VhB = np.linalg.svd(B); VB = VhB.T  
-    
+
+        # SVD(A) SVD(B)
+        UA, SA, VhA = np.linalg.svd(A)
+        VA = VhA.T
+        UB, SB, VhB = np.linalg.svd(B)
+        VB = VhB.T
+
         a_cum_spectrum = np.cumsum(SA) / sum(SA)
         b_cum_spectrum = np.cumsum(SB) / sum(SB)
-    
-        da = np.nonzero(a_cum_spectrum >= spectrumA)[0][0] + 1  
-        db = np.nonzero(b_cum_spectrum >= spectrumB)[0][0] + 1     
-        
+
+        da = np.nonzero(a_cum_spectrum >= spectrumA)[0][0] + 1
+        db = np.nonzero(b_cum_spectrum >= spectrumB)[0][0] + 1
+
         Ua = UA[:, :da]
-        Sa = SA[:da]; 
+        Sa = SA[:da]
         Va = VA[:, :da]
 
         Ub = UB[:, :db]
-        Sb = SB[:db]; 
+        Sb = SB[:db]
         Vb = VB[:, :db]
 
         Yv = (Y.T).flatten()
-        
-        Vb = Vb.copy(order='C')
-        Ua = Ua.copy(order='C')
+
+        Vb = Vb.copy(order="C")
+        Ua = Ua.copy(order="C")
         L = cythkrnPlus.kron(Vb, Ua)
 
-        d = np.eye(Y.shape[0],Y.shape[1])     
-        cidex = np.where(d.flatten()!=0)
-        diag = np.array(cidex,dtype=np.int32).flatten()
-        
-        Yv = Yv.copy(order='C') #make it c-like contiguous array
-        diag = diag.copy(order='C')
-        
-        L,Yv = cythkrnPlus.removeDiagC(L,Yv,diag)
+        d = np.eye(Y.shape[0], Y.shape[1])
+        cidex = np.where(d.flatten() != 0)
+        diag = np.array(cidex, dtype=np.int32).flatten()
 
-        opts = dict()   
-        opts['rsL2']=0
+        Yv = Yv.copy(order="C")  # make it c-like contiguous array
+        diag = diag.copy(order="C")
 
-        #reshape Yv to 2darry
-        Yv = Yv.reshape(Yv.shape[0],1)
-        beta, b = cythLeastR.LeastR(L,Yv,lamda, opts)        
-        
+        L, Yv = cythkrnPlus.removeDiagC(L, Yv, diag)
+
+        opts = dict()
+        opts["rsL2"] = 0
+
+        # reshape Yv to 2darry
+        Yv = Yv.reshape(Yv.shape[0], 1)
+        beta, b = cythLeastR.LeastR(L, Yv, lamda, opts)
+
         del L, Yv
-        gc.collect()           
-        
+        gc.collect()
+
         self.beta = beta
         self.Ua = Ua
         self.Ub = Ub
@@ -100,12 +108,12 @@ class SPaRTAN:
     def ar_model2w(self):
         m1 = self.Va
         m2 = np.linalg.pinv(self.Sa)
-        m3 = self.beta.reshape(self.Va.shape[1], self.Ub.shape[1], order="F" )
+        m3 = self.beta.reshape(self.Va.shape[1], self.Ub.shape[1], order="F")
         m4 = np.linalg.pinv(self.Sb)
         m5 = self.Ub.T
-        ww = m1 @ m2 @ m3 @ m4 @ m5 
+        ww = m1 @ m2 @ m3 @ m4 @ m5
         return ww
-    
+
     def ar_reconstruction(self, pred_test=None):
         A = self.Y_train.T @ pred_test
         O = scipy.linalg.orth(self.Y_train)
@@ -113,32 +121,34 @@ class SPaRTAN:
         ct = scipy.linalg.lstsq(cm.T, A)[0]
         pred = O @ ct
         return pred
-        
-        
+
     def predict(self, P_test=None):
-        
+
         if P_test is not None:
             self.P_test = P_test
-                       
         w = self.ar_model2w()
         pred = self.D @ (w @ self.P_test.T)
-           
+
         aff_rec = self.ar_reconstruction(pred)
-        
+
         self.Y_pred = aff_rec
         return aff_rec
-    
+
     # get the correlation between predicted Y and its o
-    def get_corr(self,Y_pred, Y_test, plot=False):
-             
-        corr = np.corrcoef(Y_test.ravel(order='F'), Y_pred.ravel(order='F'))[0,1]
+    def get_corr(self, Y_pred, Y_test, plot=False):
+
+        corr = np.corrcoef(Y_test.ravel(order="F"), Y_pred.ravel(order="F"))[0, 1]
         if plot:
-            plt.plot(Y_test.ravel(order='F'), Y_pred.ravel(order='F'), linestyle='none', marker='+')
-            plt.title('reconstruction of Y test, corr={:.2f}'.format(corr))
-        
+            plt.plot(
+                Y_test.ravel(order="F"),
+                Y_pred.ravel(order="F"),
+                linestyle="none",
+                marker="+",
+            )
+            plt.title("reconstruction of Y test, corr={:.2f}".format(corr))
         return corr
-    
-    #get interaction between TF and Protein
+
+    # get interaction between TF and Protein
     def get_W(self):
         self.W = self.ar_model2w()
         return self.W
@@ -147,12 +157,10 @@ class SPaRTAN:
     def get_projP(self, Y=None):
         if Y == None:
             Y = self.Y_train
-        return (Y.T @ self.D @ self.W)	
+        return Y.T @ self.D @ self.W
 
     # get projected TF activity on P, default is P_train
     def get_projD(self, P=None):
         if P == None:
             P = self.P_train
-        return self.W @ P.T	
-
-
+        return self.W @ P.T
