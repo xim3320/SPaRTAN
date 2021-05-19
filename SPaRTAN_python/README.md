@@ -13,7 +13,7 @@ There are two Cython extension modules needed for running SPARTAN. We have built
 
 - build cythLeastR extension module 
     
-	1. Go to folder "cythKrnPlus built", then execute the command:
+	1. Go to folder "cythLeastR built", then execute the command:
 	
 	```sh
 	python setup.py build_ext --inplace
